@@ -1,0 +1,40 @@
+##############################################
+############~.Mycorrhiza.Bridges.~############
+#################//by.Sloum\\#################
+##############################################
+
+counter = 0
+with_fx :reverb, mix: 0.75, room: 1 do
+  live_loop :voiceone do
+    play [:ef4, :g4, :bf4].choose, release: 4, attack: 4, pan: -0.75
+    sleep 8
+  end
+  
+  live_loop :voicetwo do
+    play [:af3, :ef3, :f3].choose, release: 3, attack: 2, pan: 0.75
+    sleep 5
+  end
+  
+  live_loop :voicethree do
+    play [:c3, :c4, :c2, :g2].choose, release: 5, attack: 5, pan: 1
+    sleep 7
+    if counter <= 7
+      counter += 1
+    else
+      counter = 0
+    end
+    puts counter
+  end
+  
+  with_fx :echo do
+    live_loop :pianosound do
+      if counter >= 5
+        use_synth :piano
+        play (scale :ef, :major_pentatonic, num_octaves: 1).choose, velocity: rrand(0.2, 0.5), hard: 0.3, pan: rrand(-1, 1)
+        sleep [4, 4, 4, 2, 1, 2, 0.5, 4, 4].choose
+      else
+        sleep 1
+      end
+    end
+  end
+end
