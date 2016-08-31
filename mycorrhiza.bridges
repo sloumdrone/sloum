@@ -10,10 +10,14 @@ with_fx :reverb, mix: 0.75, room: 1 do
     sleep 8
   end
   
+  
   live_loop :voicetwo do
     play [:af3, :ef3, :f3].choose, release: 3, attack: 2, pan: 0.75
     sleep 5
   end
+  
+  
+  
   
   live_loop :voicethree do
     play [:c3, :c4, :c2, :g2].choose, release: 5, attack: 5, pan: 1
@@ -25,6 +29,8 @@ with_fx :reverb, mix: 0.75, room: 1 do
     end
     puts counter
   end
+  
+  
   
   with_fx :echo do
     live_loop :pianosound do
@@ -38,3 +44,10 @@ with_fx :reverb, mix: 0.75, room: 1 do
     end
   end
 end
+
+live_loop :waves do
+  use_synth (ring :cnoise, :pnoise, :gnoise).choose
+  play rrand(30, 60), cutoff: (ring 20, 80).tick, cutoff_slide: 3, attack: 4, release: 5, cutoff_slide: 3, amp: 0.4
+  sleep [4,2,3,4,1].choose
+end
+
