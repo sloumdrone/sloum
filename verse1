@@ -1,0 +1,106 @@
+
+#modifiable variables to alter progression and sound
+chordlift = 0.25 #in general, values between 0.5 and 4 are pretty ok. 4 gets a little overblown but functions for tension
+beat_in = 0 #0 or 1
+lead_in = 1 #0 or 1
+bass_in = 0 #0 or 1
+
+#static variables
+arpscale = :f3
+leadmelody = (scale arpscale, :major_pentatonic, num_octaves: 4)
+bassline = (knit :f2, 8, :d2, 8, :bf2, 8, :d2, 8)
+
+#start loop scripts
+live_loop :chordprogression do
+  cue :basicbeat
+  cue :arp
+  cue :bassline
+  arpscale = :f3
+  4.times do
+    play chord(:f3, :add9), release: chordlift, amp: rrand(0.5, 0.8), pan: rrand(-0.5,0.5)
+    sleep 0.25
+    sample :elec_tick, amp: rrand(0.5, 0.9), pan: [-1,1].choose
+    sleep 0.25
+  end
+  arpscale = :d3
+  4.times do
+    play chord(:d3, :add9), release: chordlift, amp: rrand(0.5, 0.8), pan: rrand(-0.5,0.5)
+    sleep 0.25
+    sample :elec_tick, amp: rrand(0.5, 0.9), pan: [-1,1].choose
+    sleep 0.25
+  end
+  arpscale = :bf2
+  4.times do
+    play chord(:bf2, :add9), release: chordlift, amp: rrand(0.5, 0.8), pan: rrand(-0.5,0.5)
+    sleep 0.25
+    sample :elec_tick, amp: rrand(0.5, 0.9), pan: [-1,1].choose
+    sleep 0.25
+    
+  end
+  arpscale = :d3
+  4.times do
+    play chord(:d3, :add11), release: chordlift, amp: rrand(0.5, 0.8), pan: rrand(-0.5,0.5)
+    sleep 0.25
+    sample :elec_tick, amp: rrand(0.5, 0.9), pan: [-1,1].choose
+    sleep 0.25
+  end
+end
+
+live_loop :bassline do
+  sync :chordprogression
+  use_synth :fm
+  if bass_in == 1
+    32.times do
+      play bassline.tick, release: chordlift / 2
+      sleep 0.25
+    end
+  else
+    sleep 8
+  end
+end
+
+live_loop :basicbeat do
+  sync :chordprogression
+  if beat_in == 1
+    7.times do
+      beat_offset = [0.25,0.5].choose
+      if beat_offset == 0.25
+        sleep 0.25
+      else
+        sleep 0
+      end
+      sample :bd_klub, amp: 1
+      sleep beat_offset
+      sample :elec_mid_snare
+      sample :bd_boom, amp: 0.3
+      sleep 0.5
+    end
+    1.times do
+      sample :bd_klub, amp: 1
+      sleep 0.5
+      sample :elec_mid_snare
+      sample :bd_boom, amp: 0.3
+      sleep 0.25
+      sample :elec_mid_snare
+      sleep 0.25
+    end
+  else
+    sleep 8
+  end
+end
+
+with_fx :echo, phase: 0.125 do
+  live_loop :arp do
+    sync :chordprogression
+    if lead_in == 1
+      use_random_seed 3000
+      use_synth :beep
+      64.times do
+        play leadmelody.choose, release: chordlift - 0.25, pan: rrand(-1,1), amp: 0.2 if one_in 3
+        sleep 0.125
+      end
+    else
+      sleep 8
+    end
+  end
+end
