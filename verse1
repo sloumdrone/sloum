@@ -1,9 +1,14 @@
+################################################################
+########################VERSE1##################################
+###############by###Sloum#######################################
+###############################################09/16############
+################################################################
 
 #modifiable variables to alter progression and sound
-chordlift = 0.25 #in general, values between 0.5 and 4 are pretty ok. 4 gets a little overblown but functions for tension
-beat_in = 0 #0 or 1
+chordlift = 0.75 #in general, values between 0.25 and 4 are pretty ok. Anything > 0.99 seems to knock out the bass.
+beat_in = 1 #0 or 1
 lead_in = 1 #0 or 1
-bass_in = 0 #0 or 1
+bass_in = 1 #0 or 1
 
 #static variables
 arpscale = :f3
@@ -96,7 +101,7 @@ with_fx :echo, phase: 0.125 do
       use_random_seed 3000
       use_synth :beep
       64.times do
-        play leadmelody.choose, release: chordlift - 0.25, pan: rrand(-1,1), amp: 0.2 if one_in 3
+        play leadmelody.choose, release: (chordlift - 0.25).abs, pan: rrand(-1,1), amp: 0.2 if one_in 3
         sleep 0.125
       end
     else
