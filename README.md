@@ -4,3 +4,6 @@ The repository serves the dual function of allowing me to access the code anywhe
 
 Each file in the repository is a different 'song'.
 All code is by me, unless otherwise noted.
+
+Other musical experiements can be found at:
+http://sloum.bandcamp.com
