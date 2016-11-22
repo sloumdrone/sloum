@@ -1,0 +1,94 @@
+seed1 = 458
+seed2 = 795
+stringseed = 674
+pianoseed = 7
+bassseed = 337
+rootnote = :cs3
+counter = 9
+
+live_loop :pluck1 do
+  cue :maincue
+  use_synth :pluck
+  with_fx :reverb, mix: 0.3, room: 0.8 do
+    in_thread do
+      use_random_seed seed1
+      64.times do
+        play scale(rootnote,:chinese,num_octaves: 2).choose, release: 0.75, pan: 0.8 if one_in 3
+        sleep 0.125
+      end
+    end
+    
+    use_random_seed seed2
+    64.times do
+      play scale(rootnote + 12,:chinese,num_octaves: 2).choose, release: 2, pan: -0.8, amp: 0.9 if one_in 2
+      sleep 0.125
+    end
+    conter += 1
+    if counter % 4 == 0
+      seed2 += 100
+      seed1 += 100
+    end
+  end
+end
+
+
+
+wait 12
+live_loop :bassish do
+  sync :maincue
+  in_thread do
+    use_synth :fm
+    use_random_seed bassseed
+    
+    32.times do
+      play scale(rootnote - 24, :chinese, num_octaves: 1).choose, pan: -0.35, release: 1.25 if one_in 4
+      sleep 0.25
+    end
+    bassseed += 3
+  end
+  
+  
+  use_synth :blade
+  use_random_seed stringseed
+  64.times do
+    play scale(rootnote + 12, :chinese, num_octaves: 1).choose, pan: rrand(-1, 1), amp: 0.55, attack: 1.2, release: 4 if one_in 7
+    sleep 0.125
+  end
+  stringseed += 27
+end
+
+wait 24
+live_loop :pianostuff do
+  sync :maincue
+  use_random_seed pianoseed
+  use_synth :hollow
+  with_fx :flanger, mix: 0.8, wave: 4, depth: 6 do
+    32.times do
+      play scale(:gs3, :chinese, num_octaves: 3).choose, attack: 2, release: rrand(1.5,4), amp: 0.7, pan: rrand(-1, 1) if one_in 5
+      play scale(:gs3, :chinese, num_octaves: 3).choose, attack: 3, release: rrand(1.5,4), amp: 0.7, pan: rrand(-1, 1) if one_in 6
+      sleep 0.25
+    end
+    pianoseed += rand_i(42)
+  end
+end
+
+wait 36
+live_loop :strings2 do
+  sync :maincue
+  use_synth :prophet
+  use_random_seed stringseed + 100
+  64.times do
+    play scale(rootnote + 12, :chinese, num_octaves: 1).choose, pan: rrand(-1, 1), amp: 0.2, attack: 1.5, release: dice if one_in 13
+    sleep 0.125
+  end
+end
+
+live_loop :pulsate do
+  use_synth :beep
+  notes = [:cs3, :gs2, :cs3, :e3].tick(:new)
+  32.times do
+    play notes, release: 0.25, attack: 0.01
+    sample :bd_ada if (spread 7, 12).tick
+    sleep 0.25
+  end
+end
