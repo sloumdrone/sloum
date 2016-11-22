@@ -1,0 +1,135 @@
+##############################################################
+###############~.It's-For-Horses.~############################
+################################//by.Sloum\\##################
+##############################################################
+################################################09/16#########
+##############################################################
+
+
+######Toggled Variables for Part I/O###########
+###########Viable options: 0/1#################
+belltoggle = 1
+ambiencetoggle = 1
+lowendtoggle = 1
+breaktoggle = 1
+kidstoggle = 1
+
+######Static variables############
+bedtime = 0.125
+counter = 5
+mod = 6
+bits = 8
+
+
+##########Drum break###############
+live_loop :beat1 do
+  cue :timelock
+  if breaktoggle == 1
+    56.times do
+      sample :bd_haus, rate: [-1, 1, 1, 1].choose if (spread 3,7).tick
+      sample :drum_cymbal_closed, amp: rrand(0.1, 0.8), pan: rrand(-1,1) if (spread 5, 7).look
+      sample :drum_cymbal_open, rate: [-1,1,1].choose, amp: 0.1, rate: [-1,1].choose, pan: rrand(-0.4,0.1) if (spread 1, 7).look
+      sample :sn_dolf, pan: rrand(-0.1,0.4) if (spread 2, 7).look if one_in mod
+      sleep bedtime
+    end
+    counter += 1
+  else
+    56.times do
+      sample :drum_cymbal_closed, amp: rrand(0.1, 0.8), pan: rrand(-1,1) if (spread 5, 7).look
+      sample :drum_cymbal_open, rate: [-1,1,1].choose, amp: 0.1, rate: [-1,1].choose, pan: rrand(-0.4,0.1) if (spread 1, 7).look
+      sleep bedtime
+    end
+    counter += 1
+  end
+end
+
+#############High pitched ambience##################
+with_fx :distortion, distort: 0.75, mix: 0.45 do
+  live_loop :ambience do
+    use_synth :dark_ambience
+    if ambiencetoggle == 1
+      play [:a3, :d3, :a3, :d3, :c4].choose, release: 7, attack: 2, amp: 1, pan: rrand(-1, 0.2)
+      play [:a4,:f4].choose, release: 7, attack: 3, amp: 0.65, pan: rrand(-0.2, 1)
+      sleep 7
+    else
+      sleep 7
+    end
+  end
+end
+
+
+###################Main Melody######################
+live_loop :bells do
+  sync :timelock
+  use_synth :beep
+  use_random_seed 732
+  if belltoggle == 1
+    if counter % 2 == 0
+      if mod > 7
+        mod = 4
+        bits = 1
+      else
+        mod += 1
+        bits = 8
+      end
+    end
+    56.times do
+      play (chord :d4, :M7, num_octaves: 2).choose, amp: [0.3, 0.4, 0.9].choose, release: 2 if one_in mod - 1
+      play (scale :d, :aeolian, num_octaves: 1).choose, amp: [0.3, 0.4, 0.9].choose, release: 2 if one_in mod + 1
+      sleep bedtime
+    end
+  else
+    sleep 7
+  end
+end
+
+
+##################Low end + a few sound effects#############
+with_fx :bitcrusher, bits: bits do
+  live_loop :bassswoop do
+    if lowendtoggle == 1
+      use_synth :growl
+      play :d2, attack: 2, release: 5
+      sleep bedtime * 3
+      use_synth :fm
+      play :a1, attack: 3, release: 7
+      sleep 2
+      play :a3, attack: 0.15, release: bedtime
+      sleep bedtime
+      play :fs3, attack: 0.15, release: bedtime if one_in 3
+      sleep 1
+      sample :perc_till, rate: -1.5, amp: 0.7 if one_in 4
+      sleep 1
+    else
+      sleep 4.5
+    end
+  end
+end
+
+#########################################################################################################
+###########Kids voices saying "Hey"######################################################################
+###Note: If moved from one system to another, file path must be modified to reflect sample location######
+#########################################################################################################
+
+live_loop :sounds do
+  diceseed = dice 5
+  if kidstoggle == 1
+    if diceseed == 1
+      sample "C:/brian/SonicPi/DownloadedSounds/Kid_Says_Hey.wav", start: 0, finish: 0.2, rate: rrand(0.4,1.25), pan: -0.8
+      sleep rrand(1,7.5)
+    elsif diceseed == 2
+      sample "C:/brian/SonicPi/DownloadedSounds/Kid_Says_Hey.wav", start: 0.45, finish: 0.5, rate: rrand(-2,1.75), pan: 0.75
+      sleep rrand(1,7.5)
+    elsif diceseed == 3
+      sample "C:/brian/SonicPi/DownloadedSounds/Kid_Says_Hey.wav", start: 0.65, finish: 0.758, rate: rrand(0.8,1.4), pan: -0.2
+      sleep rrand(1,7.5)
+    elsif diceseed == 4
+      sample "C:/brian/SonicPi/DownloadedSounds/Kid_Says_Hey.wav", start: 0.78, finish: 0.85, rate: rrand(0.5,1.25), pan: 0.15
+      sleep rrand(1,7.5)
+    else
+      sleep 5
+    end
+  else
+    sleep 0.125
+  end
+end
