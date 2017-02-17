@@ -1,0 +1,52 @@
+counter = 10
+
+
+live_loop :pulse do
+  
+  note1 = ring(:ef3, :df3, :ef3, :df3, :bf2, :af2).tick
+  note2 = ring(:bf3, :af3, :bf3, :af3, :f3, :ef3).look
+  8.times do
+    play note1
+    sleep 0.4
+    play note2
+    sleep 0.4
+  end
+  counter += 1
+end
+
+live_loop :melody do
+  mnotes = ring(:f4, :af4, :r, :bf4, :r, :gf4, :r, :f4, :r, :r, :r, :r, :r, :r, :r, :r)
+  mnotess = ring(:df5, :af4, :r, :bf4, :r, :gf4, :r, :f4, :r, :r, :r, :r, :r, :r, :r, :r)
+  32.times do
+    play mnotes.tick
+    sleep 0.2
+  end
+  32.times do
+    play mnotess.tick
+    sleep 0.2
+  end
+end
+
+live_loop :lead do
+  use_synth :beep
+  sync :pulse
+  puts (counter * 0.1).round
+  if (counter * 0.1).round % 2 == 0
+    32.times do
+      play scale(:df4,:major_pentatonic, num_octaves: 2).choose, pan: rrand(-1,1), amp: 0.35, release: 4 if one_in 2
+      sleep 0.2
+    end
+  else
+    sleep 0.2
+  end
+end
+
+
+sounds = ring(:drum_heavy_kick,:drum_tom_mid_hard,:drum_tom_lo_soft,:drum_tom_lo_hard,:drum_tom_hi_soft,:drum_tom_hi_har,:drum_splash_soft,:drum_snare_soft,:drum_snare_hard,:drum_cymbal_soft,:drum_cymbal_open,:drum_cymbal_closed,:drum_cymbal_pedal,:drum_bass_soft,:drum_bass_hard)
+live_loop :drums do
+  sample sounds.choose, amp: rrand(0.4, 0.5), pan: rrand(-0.5,0.5), rate: 1 if (spread 4, 5).tick
+  sample sounds.choose, amp: rrand(0.4, 0.5), pan: rrand(-0.5,0.5), rate: 1 if (spread 7, 23).look
+  sample sounds.choose, amp: rrand(0.4, 0.5), pan: rrand(-0.5,0.5), rate: 1 if (spread 2, 9).look
+  sample sounds.choose, amp: rrand(0.4, 0.5), pan: rrand(-0.5,0.5) if one_in 5
+  sleep 0.2
+end
